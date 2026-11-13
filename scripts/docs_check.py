@@ -100,12 +100,51 @@ def check_context(root, findings):
         check_no_code("CONTEXT.md", path.read_text(encoding="utf-8"), findings)
 
 
+SLUG_FILE = re.compile(r"^[a-z][a-z0-9-]*\.md$")
+
+
+def folder_index(root, name, findings):
+    """The folder's README text, or None when the folder does not exist."""
+    folder = root / "docs" / name
+    if not folder.is_dir():
+        return None
+    readme = folder / "README.md"
+    if not readme.exists():
+        findings.append(f"docs/{name}/README.md is missing")
+        return ""
+    return readme.read_text(encoding="utf-8")
+
+
+def entries(root, name):
+    for path in sorted((root / "docs" / name).glob("*.md")):
+        if path.name != "README.md":
+            yield path, f"docs/{name}/{path.name}", path.read_text(encoding="utf-8")
+
+
+def check_slug_and_index(path, rel, index, name, findings):
+    if not SLUG_FILE.match(path.name):
+        findings.append(f"{rel}: name it by its topic in lowercase, such as the-day.md, never by number")
+    if f"({path.name})" not in index:
+        findings.append(f"{rel} is not in docs/{name}/README.md")
+
+
+def check_adrs(root, findings):
+    index = folder_index(root, "adr", findings)
+    if index is None:
+        return
+    for path, rel, text in entries(root, "adr"):
+        check_slug_and_index(path, rel, index, "adr", findings)
+        if not text.startswith("# "):
+            findings.append(f"{rel}:1: no title heading")
+
+
 def check(root: Path):
     findings = []
     for path in markdown_files(root):
         check_links(root, path, path.read_text(encoding="utf-8"), findings)
     check_design(root, findings)
     check_context(root, findings)
+    check_adrs(root, findings)
     return findings
 
 

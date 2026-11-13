@@ -136,6 +136,22 @@ class DocsCheckTest(unittest.TestCase):
         (self.root / "CONTEXT.md").unlink()
         self.assertEqual(self.findings(), [])
 
+    def test_a_numbered_adr_is_found(self):
+        self.write("docs/adr/0001-storage.md", ADR)
+        self.assertFinding("docs/adr/0001-storage.md: name it by its topic")
+
+    def test_an_unindexed_adr_is_found(self):
+        self.write("docs/adr/sync.md", "# Sync\n\nText.\n")
+        self.assertFinding("docs/adr/sync.md is not in docs/adr/README.md")
+
+    def test_an_adr_without_a_title_is_found(self):
+        self.write("docs/adr/storage.md", "Cards are kept in JSON.\n")
+        self.assertFinding("docs/adr/storage.md:1: no title")
+
+    def test_a_missing_adr_index_is_found(self):
+        (self.root / "docs/adr/README.md").unlink()
+        self.assertFinding("docs/adr/README.md is missing")
+
 
 if __name__ == "__main__":
     unittest.main()
