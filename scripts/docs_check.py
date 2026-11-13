@@ -186,12 +186,21 @@ def check_entry_numbers(root, path, text, findings):
         )
 
 
+TOKEN = re.compile(r"\{\{[A-Z_]+\}\}")
+
+
+def check_tokens(root, path, text, findings):
+    for m in TOKEN.finditer(prose_of(text)):
+        findings.append(f"{rel_of(root, path)}:{line_of(text, m.start())}: unfilled token {m.group(0)}")
+
+
 def check(root: Path):
     findings = []
     for path in markdown_files(root):
         text = path.read_text(encoding="utf-8")
         check_links(root, path, text, findings)
         check_entry_numbers(root, path, text, findings)
+        check_tokens(root, path, text, findings)
     check_design(root, findings)
     check_context(root, findings)
     check_adrs(root, findings)
@@ -202,6 +211,9 @@ def check(root: Path):
 
 def main(argv):
     root = Path(argv[1]) if len(argv) > 1 else Path.cwd()
+    if not root.is_dir():
+        print(f"{root} is not a folder")
+        return 2
     findings = check(root)
     for finding in findings:
         print(finding)

@@ -1,8 +1,10 @@
 """Tests for docs_check.py. Run with: python tests/test_docs_check.py"""
 
 import importlib.util
+import io
 import tempfile
 import unittest
+from contextlib import redirect_stdout
 from pathlib import Path
 
 spec = importlib.util.spec_from_file_location(
@@ -202,6 +204,21 @@ class DocsCheckTest(unittest.TestCase):
     def test_entry_number_inside_code_is_ignored(self):
         self.write("docs/ideas/some-idea.md", IDEA + "\n`entry 3`\n")
         self.assertEqual(self.findings(), [])
+
+    def test_an_unfilled_token_is_found(self):
+        self.write("AGENTS.md", "# AGENTS.md\n\nAsk {{OWNER}} first.\n")
+        self.assertFinding("AGENTS.md:3: unfilled token {{OWNER}}")
+
+    def test_a_token_inside_code_is_ignored(self):
+        self.write("AGENTS.md", "# AGENTS.md\n\nThe skill fills `{{OWNER}}`.\n")
+        self.assertEqual(self.findings(), [])
+
+    def test_a_missing_root_is_reported_as_such(self):
+        missing = str(self.root / "nowhere")
+        with redirect_stdout(io.StringIO()) as out:
+            code = docs_check.main(["docs_check.py", missing])
+        self.assertEqual(code, 2)
+        self.assertIn("is not a folder", out.getvalue())
 
 
 if __name__ == "__main__":
