@@ -1,0 +1,13 @@
+{
+  "name": "groundwork",
+  "description": "groundwork, a documentation and workflow kit for Claude Code projects.",
+  "owner": { "name": "DeCoppelElias" },
+  "allowCrossMarketplaceDependenciesOn": ["mattpocock", "superpowers-dev"],
+  "plugins": [
+    {
+      "name": "groundwork",
+      "source": "./",
+      "description": "Project documents, their checker, and the workflows around them."
+    }
+  ]
+}

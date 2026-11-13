@@ -1,0 +1,10 @@
+{
+  "name": "groundwork",
+  "version": "0.1.0",
+  "description": "Sets up a project's design, glossary, decision, idea and roadmap documents, checks them, and carries the workflows an agent needs around them.",
+  "author": { "name": "DeCoppelElias" },
+  "repository": "https://github.com/DeCoppelElias/groundwork",
+  "license": "MIT",
+  "keywords": ["adr", "documentation", "workflow", "roadmap"],
+  "dependencies": ["mattpocock-skills@mattpocock", "superpowers@superpowers-dev"]
+}
