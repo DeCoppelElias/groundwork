@@ -1,5 +1,5 @@
 ---
 type: regex
 target: { source: file, path: AGENTS.md }
-pattern: "Ask Elias"
+pattern: "Ask the user"
 ---
