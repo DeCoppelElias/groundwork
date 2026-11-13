@@ -1,0 +1,4 @@
+#!/bin/sh
+# Runs the checker over the current project, or over the folder given.
+here=$(dirname "$0")
+exec python "$here/../scripts/docs_check.py" "$@"
