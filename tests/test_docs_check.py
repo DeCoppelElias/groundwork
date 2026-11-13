@@ -88,6 +88,22 @@ class DocsCheckTest(unittest.TestCase):
     def test_a_valid_project_is_clean(self):
         self.assertEqual(self.findings(), [])
 
+    def test_a_broken_link_is_found(self):
+        self.write("docs/ideas/some-idea.md", IDEA + "\nSee [gone](gone.md).\n")
+        self.assertFinding("docs/ideas/some-idea.md:13: broken link gone.md")
+
+    def test_a_link_inside_code_is_ignored(self):
+        self.write("docs/ideas/some-idea.md", IDEA + "\n`[gone](gone.md)`\n")
+        self.assertEqual(self.findings(), [])
+
+    def test_a_missing_backticked_docs_path_is_found(self):
+        self.write("CONTEXT.md", CONTEXT + "\nSee `docs/adr/gone.md`.\n")
+        self.assertFinding("missing path docs/adr/gone.md")
+
+    def test_web_links_are_not_followed(self):
+        self.write("docs/ideas/some-idea.md", IDEA + "\n[site](https://example.com)\n")
+        self.assertEqual(self.findings(), [])
+
 
 if __name__ == "__main__":
     unittest.main()
