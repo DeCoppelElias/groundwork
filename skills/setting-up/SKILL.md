@@ -14,6 +14,7 @@ description: Sets up groundwork's documents in a project that has none yet: DESI
    - `{{PROJECT}}`: the project's name, from the folder or its manifest.
    - `{{ONE_LINE}}`: what it is, in one sentence. Ask; do not invent it.
    - `{{OWNER}}`: who approves, from `git config user.name`. Confirm it.
+     When that is empty or the folder is not a git repository, ask.
    - `{{BUILD_COMMANDS}}`: the build, test and run commands, from the
      project's files (package.json scripts, pom.xml, pyproject.toml, Makefile).
      Show what you found and confirm. Write `None yet.` when there are none.
@@ -24,8 +25,10 @@ description: Sets up groundwork's documents in a project that has none yet: DESI
 ## Writing
 
 Copy every file under `${CLAUDE_PLUGIN_ROOT}/skills/setting-up/templates/` to
-the same path in the project, filling the tokens. If `.claude/settings.json`
-already exists, merge the two keys into it instead of replacing it.
+the same path in the project, filling the tokens. Skip `.github/` unless the
+owner said the project is on GitHub. Two files may already exist and are
+merged, never replaced. If `CLAUDE.md` exists, add `@AGENTS.md` as its first
+line. If `.claude/settings.json` exists, merge the two keys into it.
 
 Then run `groundwork-docs-check` and fix what it reports. Leave the Goals,
 Non-goals and Language sections for the owner to fill, and offer to grill
