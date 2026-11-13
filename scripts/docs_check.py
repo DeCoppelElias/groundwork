@@ -138,6 +138,30 @@ def check_adrs(root, findings):
             findings.append(f"{rel}:1: no title heading")
 
 
+IDEA_STATUSES = {"idea", "planned", "built"}
+IDEA_SECTIONS = ["What it does", "Why it is interesting", "What it would touch", "Open questions"]
+STATUS_LINE = re.compile(r"^Status: (.+?)\.?$", re.MULTILINE)
+
+
+def check_ideas(root, findings):
+    index = folder_index(root, "ideas", findings)
+    if index is None:
+        return
+    for path, rel, text in entries(root, "ideas"):
+        check_slug_and_index(path, rel, index, "ideas", findings)
+        status = STATUS_LINE.search(text)
+        word = status.group(1).split()[0].rstrip(".,") if status else None
+        if word not in IDEA_STATUSES:
+            findings.append(f"{rel}: status must start with one of {sorted(IDEA_STATUSES)}")
+        elif word == "built" and "../adr/" not in status.group(1):
+            findings.append(f"{rel}: built but links no decision in its status line")
+        elif word == "planned" and "../roadmap/" not in status.group(1):
+            findings.append(f"{rel}: planned but links no roadmap entry in its status line")
+        for section in IDEA_SECTIONS:
+            if not re.search(rf"^## {section}\s*$", text, re.MULTILINE):
+                findings.append(f"{rel}: missing section {section}")
+
+
 def check(root: Path):
     findings = []
     for path in markdown_files(root):
@@ -145,6 +169,7 @@ def check(root: Path):
     check_design(root, findings)
     check_context(root, findings)
     check_adrs(root, findings)
+    check_ideas(root, findings)
     return findings
 
 

@@ -152,6 +152,33 @@ class DocsCheckTest(unittest.TestCase):
         (self.root / "docs/adr/README.md").unlink()
         self.assertFinding("docs/adr/README.md is missing")
 
+    def test_an_unknown_idea_status_is_found(self):
+        self.write("docs/ideas/some-idea.md", IDEA.replace("Status: idea.", "Status: maybe."))
+        self.assertFinding("docs/ideas/some-idea.md: status must start with one of")
+
+    def test_a_built_idea_must_link_its_decision(self):
+        self.write("docs/ideas/some-idea.md", IDEA.replace("Status: idea.", "Status: built."))
+        self.assertFinding("built but links no decision")
+
+    def test_a_built_idea_linking_its_decision_is_clean(self):
+        self.write(
+            "docs/ideas/some-idea.md",
+            IDEA.replace("Status: idea.", "Status: built, [storage](../adr/storage.md)."),
+        )
+        self.assertEqual(self.findings(), [])
+
+    def test_a_planned_idea_must_link_its_entry(self):
+        self.write("docs/ideas/some-idea.md", IDEA.replace("Status: idea.", "Status: planned."))
+        self.assertFinding("planned but links no roadmap entry")
+
+    def test_a_missing_idea_section_is_found(self):
+        self.write("docs/ideas/some-idea.md", IDEA.replace("## Open questions\n", ""))
+        self.assertFinding("missing section Open questions")
+
+    def test_an_unindexed_idea_is_found(self):
+        self.write("docs/ideas/other.md", IDEA)
+        self.assertFinding("docs/ideas/other.md is not in docs/ideas/README.md")
+
 
 if __name__ == "__main__":
     unittest.main()
