@@ -104,6 +104,38 @@ class DocsCheckTest(unittest.TestCase):
         self.write("docs/ideas/some-idea.md", IDEA + "\n[site](https://example.com)\n")
         self.assertEqual(self.findings(), [])
 
+    def test_design_over_the_cap_is_found(self):
+        self.write("DESIGN.md", DESIGN + "line\n" * 150)
+        self.assertFinding("DESIGN.md: 157 lines, the cap is 150")
+
+    def test_design_linking_an_adr_is_found(self):
+        self.write("DESIGN.md", DESIGN + "\nSee [storage](docs/adr/storage.md).\n")
+        self.assertFinding("DESIGN.md:9: links a decision")
+
+    def test_design_naming_an_adr_path_is_found(self):
+        self.write("DESIGN.md", DESIGN + "\nSee `docs/adr/storage.md`.\n")
+        self.assertFinding("DESIGN.md:9: links a decision")
+
+    def test_design_may_name_the_adr_folder(self):
+        self.write("DESIGN.md", DESIGN + "\nHow it is built lives in `docs/adr/`.\n")
+        self.assertEqual(self.findings(), [])
+
+    def test_code_in_design_is_found(self):
+        self.write("DESIGN.md", DESIGN + "\n```\nx = 1\n```\n")
+        self.assertFinding("DESIGN.md:9: holds a code block")
+
+    def test_code_in_context_is_found(self):
+        self.write("CONTEXT.md", CONTEXT + "\n```\nx = 1\n```\n")
+        self.assertFinding("CONTEXT.md:11: holds a code block")
+
+    def test_a_missing_design_is_found(self):
+        (self.root / "DESIGN.md").unlink()
+        self.assertFinding("DESIGN.md is missing")
+
+    def test_context_is_optional(self):
+        (self.root / "CONTEXT.md").unlink()
+        self.assertEqual(self.findings(), [])
+
 
 if __name__ == "__main__":
     unittest.main()

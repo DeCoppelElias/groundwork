@@ -60,10 +60,52 @@ def check_links(root, path, text, findings):
             findings.append(f"{rel}:{line_of(text, m.start())}: missing path {m.group(1)}")
 
 
+DESIGN_MAX_LINES = 150
+
+
+def line_count(text):
+    return text.count("\n") + (0 if text.endswith("\n") or not text else 1)
+
+
+def check_no_code(rel, text, findings):
+    m = FENCE.search(text)
+    if m:
+        findings.append(f"{rel}:{line_of(text, m.start())}: holds a code block; code belongs in the code")
+
+
+def check_design(root, findings):
+    path = root / "DESIGN.md"
+    if not path.exists():
+        findings.append("DESIGN.md is missing")
+        return
+    text = path.read_text(encoding="utf-8")
+    lines = line_count(text)
+    if lines > DESIGN_MAX_LINES:
+        findings.append(
+            f"DESIGN.md: {lines} lines, the cap is {DESIGN_MAX_LINES}; detail belongs in docs/adr/"
+        )
+    check_no_code("DESIGN.md", text, findings)
+    prose = prose_of(text)
+    for m in LINK.finditer(prose):
+        if "docs/adr/" in m.group(1):
+            findings.append(f"DESIGN.md:{line_of(text, m.start())}: links a decision; DESIGN.md stays above them")
+    for m in DOCS_PATH.finditer(blank_out(FENCE, text)):
+        if m.group(1).startswith("docs/adr/"):
+            findings.append(f"DESIGN.md:{line_of(text, m.start())}: links a decision; DESIGN.md stays above them")
+
+
+def check_context(root, findings):
+    path = root / "CONTEXT.md"
+    if path.exists():
+        check_no_code("CONTEXT.md", path.read_text(encoding="utf-8"), findings)
+
+
 def check(root: Path):
     findings = []
     for path in markdown_files(root):
         check_links(root, path, path.read_text(encoding="utf-8"), findings)
+    check_design(root, findings)
+    check_context(root, findings)
     return findings
 
 
