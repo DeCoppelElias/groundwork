@@ -9,3 +9,7 @@ describe, so each has to earn its place.
 A grill writes nothing until it ends, then sends a summary and applies the
 changes after the owner says go. Grilling itself uses mattpocock's
 `grill-with-docs` rather than a groundwork skill.
+
+The first eval run, on 2026-11-13, called for no skill. Every workflow case
+passed on AGENTS.md lines alone once two were added: report drift before
+fixing it, and the project's README is the one an entry updates.

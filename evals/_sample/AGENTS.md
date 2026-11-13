@@ -26,6 +26,9 @@ decision, adding or reordering roadmap entries, and before any push, merge,
 pull request or tag. Asking means giving the options with a recommendation and
 waiting, not deciding and asking for confirmation afterwards.
 
+When a document has drifted or holds something outside its lane, report it
+with the fix you propose, and change it only after Elias says go.
+
 A grill writes nothing to the documents until it ends. Then it sends a summary
 of every choice and the changes it makes, and applies them on a branch after
 Elias says go.
@@ -34,7 +37,7 @@ Elias says go.
 
 An entry is built on its own branch, `entry-<slug>`. Grill the details it
 leaves open before planning. It is finished when the tests pass, the code is
-reviewed, its status reads `done`, the README describes what it built, any idea
+reviewed, its status reads `done`, the project's README describes what it built, any idea
 it built is marked `built`, any choice made on the way is in its decision, and
 `groundwork-docs-check` is clean. Then it merges on Elias's go.
 
