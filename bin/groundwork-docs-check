@@ -1,4 +1,7 @@
 #!/bin/sh
 # Runs the checker over the current project, or over the folder given.
 here=$(dirname "$0")
+if python3 -c "" 2>/dev/null; then
+    exec python3 "$here/../scripts/docs_check.py" "$@"
+fi
 exec python "$here/../scripts/docs_check.py" "$@"
