@@ -162,14 +162,41 @@ def check_ideas(root, findings):
                 findings.append(f"{rel}: missing section {section}")
 
 
+ROADMAP_STATUSES = {"not started", "in progress", "done"}
+ENTRY_NUMBER = re.compile(r"\bentry\s+\d+\b", re.IGNORECASE)
+
+
+def check_roadmap(root, findings):
+    index = folder_index(root, "roadmap", findings)
+    if index is None:
+        return
+    for path, rel, text in entries(root, "roadmap"):
+        check_slug_and_index(path, rel, index, "roadmap", findings)
+        status = STATUS_LINE.search(text)
+        if not status:
+            findings.append(f"{rel}: no status line")
+        elif status.group(1) not in ROADMAP_STATUSES:
+            findings.append(f"{rel}: status {status.group(1)!r}, expected one of {sorted(ROADMAP_STATUSES)}")
+
+
+def check_entry_numbers(root, path, text, findings):
+    for m in ENTRY_NUMBER.finditer(prose_of(text)):
+        findings.append(
+            f"{rel_of(root, path)}:{line_of(text, m.start())}: names a roadmap entry by number; link it by slug"
+        )
+
+
 def check(root: Path):
     findings = []
     for path in markdown_files(root):
-        check_links(root, path, path.read_text(encoding="utf-8"), findings)
+        text = path.read_text(encoding="utf-8")
+        check_links(root, path, text, findings)
+        check_entry_numbers(root, path, text, findings)
     check_design(root, findings)
     check_context(root, findings)
     check_adrs(root, findings)
     check_ideas(root, findings)
+    check_roadmap(root, findings)
     return findings
 
 

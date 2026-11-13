@@ -179,6 +179,30 @@ class DocsCheckTest(unittest.TestCase):
         self.write("docs/ideas/other.md", IDEA)
         self.assertFinding("docs/ideas/other.md is not in docs/ideas/README.md")
 
+    def test_a_numbered_entry_is_found(self):
+        self.write("docs/roadmap/01-board.md", ENTRY)
+        self.assertFinding("docs/roadmap/01-board.md: name it by its topic")
+
+    def test_an_entry_without_status_is_found(self):
+        self.write("docs/roadmap/board.md", "# Board\n\nText.\n")
+        self.assertFinding("docs/roadmap/board.md: no status line")
+
+    def test_an_unknown_entry_status_is_found(self):
+        self.write("docs/roadmap/board.md", ENTRY.replace("not started", "soon"))
+        self.assertFinding("status 'soon'")
+
+    def test_an_unlisted_entry_is_found(self):
+        self.write("docs/roadmap/sync.md", ENTRY)
+        self.assertFinding("docs/roadmap/sync.md is not in docs/roadmap/README.md")
+
+    def test_naming_an_entry_by_number_is_found(self):
+        self.write("docs/ideas/some-idea.md", IDEA + "\nThis waits for entry 3.\n")
+        self.assertFinding("docs/ideas/some-idea.md:13: names a roadmap entry by number")
+
+    def test_entry_number_inside_code_is_ignored(self):
+        self.write("docs/ideas/some-idea.md", IDEA + "\n`entry 3`\n")
+        self.assertEqual(self.findings(), [])
+
 
 if __name__ == "__main__":
     unittest.main()
