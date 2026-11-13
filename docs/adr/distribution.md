@@ -11,7 +11,8 @@ launcher for Bash and a `.cmd` launcher because PowerShell cannot run the sh
 one. A project's CI fetches the checker at a pinned tag instead, since CI has
 no plugins.
 
-groundwork depends on mattpocock's skills and superpowers, from other
-marketplaces. The marketplace lists both in
-`allowCrossMarketplaceDependenciesOn`; without that, an install drops the
-dependencies and the plugin fails to load.
+groundwork declares no plugin dependencies, and the README recommends
+superpowers and mattpocock's skills instead. An eval run loads only the plugin
+under test, and a plugin whose dependencies are missing does not load, so
+declared dependencies would leave groundwork untestable. It calls none of
+their skills, so nothing breaks without them.

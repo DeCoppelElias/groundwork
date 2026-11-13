@@ -21,15 +21,13 @@ It builds on [superpowers](https://github.com/obra/superpowers) and
 
 ## Install
 
-groundwork depends on plugins from both of those marketplaces, so add them
-first:
-
 ```
-claude plugin marketplace add mattpocock/skills
-claude plugin marketplace add obra/superpowers
 claude plugin marketplace add DeCoppelElias/groundwork
 claude plugin install groundwork@groundwork
 ```
+
+groundwork works best alongside superpowers and mattpocock's skills, whose
+grills it relies on. Install them the same way if you do not have them.
 
 In a new project, ask Claude to set it up with groundwork.
 
