@@ -14,3 +14,4 @@ Each idea gets one line below, a link and a few words.
 - [Architecture map](architecture-map.md): a code map for agents, so the README stays for visitors.
 - [Decision content](decision-content.md): decisions state the present, never the history.
 - [Found bugs](found-bugs.md): where bugs go, such as review findings unrelated to an entry.
+- [Plan files](plan-files.md): a gitignored folder for an entry's implementation plan.
